@@ -15,15 +15,6 @@
  */
 package com.deepoove.poi.render;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.deepoove.poi.NiceXWPFDocument;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
@@ -32,8 +23,13 @@ import com.deepoove.poi.el.ELObject;
 import com.deepoove.poi.exception.RenderException;
 import com.deepoove.poi.policy.DocxRenderPolicy;
 import com.deepoove.poi.policy.RenderPolicy;
+import com.deepoove.poi.policy.RenderPolicyWithTagName;
 import com.deepoove.poi.template.ElementTemplate;
 import com.deepoove.poi.util.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * @author Sayi
@@ -113,9 +109,13 @@ public class RenderAPI {
 	}
 
 	private static void doRender(ElementTemplate ele, ELObject model, RenderPolicy policy, XWPFTemplate template) {
-		LOGGER.debug("Start render TemplateName:{}, Sign:{}, policy:{}", ele.getTagName(), ele.getSign(),
-				policy.getClass().getSimpleName());
-		policy.render(ele, model.eval(ele.getTagName()), template);
+		LOGGER.debug("Start render TemplateName:{}, Sign:{}, policy:{}", ele.getTagName(), ele.getSign(), policy.getClass().getSimpleName());
+		if (policy instanceof RenderPolicyWithTagName) {
+			RenderPolicyWithTagName policyWithTagName = (RenderPolicyWithTagName) policy;
+			policyWithTagName.render(ele, model.eval(ele.getTagName()), template, ele.getTagName());
+		} else {
+			policy.render(ele, model.eval(ele.getTagName()), template);
+		}
 	}
 
 	/**

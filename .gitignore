@@ -16,3 +16,4 @@ hs_err_pid*
 out*.docx
 out_*
 merge_all
+.idea
